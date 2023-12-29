@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  server:
+    build: ./server
+    container_name: server
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql1:
+        condition: service_healthy
+  app:
+    build: ./client
+    container_name: reactapp
+    ports:
+      - "3000:3000"
+  mysql1:
+    image: mysql:5.7
+    platform: linux/x86_64
+    ports:
+      - '3306:3306'
+    container_name: db1
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin" ]
+      interval: 10s
+      timeout: 9s
+      retries: 5
